@@ -3,12 +3,37 @@ using System.Collections.Generic;
 
 public class Selection : MonoBehaviour {
 
-    public Texture2D selectionHighlight;
-    public static Rect seletionRect = new Rect(0,0,0,0);
+    [SerializeField]
+    private Texture2D _selectionHighlight;
+    [SerializeField]
+    private Unit[] _units = new Unit[0];
+
+    public Texture2D selectionHighlight
+    {
+        get
+        {
+            return _selectionHighlight;
+        }
+        set
+        {
+            _selectionHighlight = value;
+        }
+    }
+
+    public Unit[] units  
+    {
+        get
+        {
+            return _units;
+        }
+        set
+        {
+            _units = value;
+        }
+    }
+
+    private Rect seletionRect = new Rect(0,0,0,0);
     private Vector3 startClick = -Vector3.one;
-
-    public Unit[] units = new Unit[0];
-
     private Color selectionColor = Color.green;
 
     private float ScreenToRectSpaceY(float y)
@@ -16,7 +41,7 @@ public class Selection : MonoBehaviour {
         return Screen.height - y;
     }
 
-    public void Select(Unit unit)
+    private void Select(Unit unit)
     {
         unit.selected = true;
         unit.GetComponent<Renderer>().material.color = selectionColor;
@@ -34,10 +59,10 @@ public class Selection : MonoBehaviour {
         {
             if(unit.GetComponent<Renderer>().isVisible)
             {
-                Vector3 camPos = Camera.main.WorldToScreenPoint(unit.transform.position);
-                camPos.y = ScreenToRectSpaceY(camPos.y);
+                Vector3 unitPosition = Camera.main.WorldToScreenPoint(unit.transform.position);
+                unitPosition.y = ScreenToRectSpaceY(unitPosition.y);
                 
-                if(seletionRect.Contains(camPos))
+                if(seletionRect.Contains(unitPosition))
                 {
                     Select(unit);
                 }
@@ -54,7 +79,7 @@ public class Selection : MonoBehaviour {
         }
     }
 
-    private void HandleClickSelection(Vector3 startClick)
+    private void HandleClickSelection()
     {
         RaycastHit hitInfo = new RaycastHit();
         bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(startClick), out hitInfo);
@@ -87,7 +112,7 @@ public class Selection : MonoBehaviour {
         }
     }
 
-    private void UpdateMultiSelectionRect(Vector3 startClick)
+    private void UpdateMultiSelectionRect()
     {
         seletionRect = new Rect(startClick.x, ScreenToRectSpaceY(startClick.y),
                 Input.mousePosition.x - startClick.x,
@@ -117,7 +142,7 @@ public class Selection : MonoBehaviour {
             {
                 // not multiselecting, ok to perform click selection
 
-                HandleClickSelection(startClick);
+                HandleClickSelection();
             }
 
             startClick = -Vector3.one;
@@ -126,7 +151,7 @@ public class Selection : MonoBehaviour {
 
         if(Input.GetMouseButton(0))
         {
-            UpdateMultiSelectionRect(startClick);
+            UpdateMultiSelectionRect();
             if(seletionRect.width > 0 || seletionRect.height > 0)
             { 
                 HandleDragSelection();
@@ -134,14 +159,14 @@ public class Selection : MonoBehaviour {
         }
     }
 
-    
+    // unity 
 
-    void Update()
+    private void Update()
     {
         HandleSelection();
     }
 
-    void OnGUI()
+    private void OnGUI()
     {
         if(startClick != -Vector3.one)
         {
