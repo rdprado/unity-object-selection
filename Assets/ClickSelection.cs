@@ -1,61 +1,55 @@
 using UnityEngine;
 
-public class ClickSelection
+public class ClickSelection : SelectionMode
 {
-    private SelectionBehaviour _selectionBehaviour;
-    public ClickSelection(SelectionBehaviour selectionBehaviour)
-    {
-        _selectionBehaviour = selectionBehaviour;
-    }
-
-    public void MakeSelection(Unit[] units, Vector3 clickPoint)
+    public void MouseWasClicked(Vector3 click)
     {
         RaycastHit hitInfo = new RaycastHit();
-        bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(clickPoint), out hitInfo);
+        bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(click), out hitInfo);
         if (hit) 
         {
             Unit unitHit = hitInfo.transform.gameObject.GetComponent<Unit>();
             if(unitHit != null)
             {
                 Debug.Log("Hit " + hitInfo.transform.gameObject.name);
-                SingleUnitHit(unitHit, units);
+                UnitWasHit(unitHit);
             }
             else
             {
                 Debug.Log("No hit");
-                NoUnitsHit(units);
+                NoUnitsWereHit();
             }
         } 
         else 
         {
             Debug.Log("No hit");
-            NoUnitsHit(units);
+            NoUnitsWereHit();
         }
 
     }
 
-    private void SingleUnitHit(Unit unitHit, Unit[] units)
+    private void UnitWasHit(Unit unitHit)
     {
         if(unitHit != null)
         {
-            _selectionBehaviour.Select(unitHit); 
+            selectionBehaviour.Select(unitHit); 
         }
         foreach(var unit in units)
         {
             if(unit != unitHit && unit.selected)
             {
-                _selectionBehaviour.Unselect(unit);
+                selectionBehaviour.Unselect(unit);
             }                  
         }
     }
 
-    private void NoUnitsHit(Unit[] units)
+    private void NoUnitsWereHit()
     {
         foreach(var unit in units)
         {
             if(unit.selected)
             {
-                _selectionBehaviour.Unselect(unit);
+                selectionBehaviour.Unselect(unit);
             }
         }
     }

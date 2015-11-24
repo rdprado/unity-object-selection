@@ -13,59 +13,101 @@ public class Selection : MonoBehaviour {
     private SelectionBehaviour _selectionBehaviour;
     
     public Texture2D selectionHighlight{get{return _selectionHighlight;}set{_selectionHighlight = value;}}
-    public Unit[] units{get{return _units;}set{_units = value;}}
-    public SelectionBehaviour selectionBehaviour{get{return _selectionBehaviour;}set{_selectionBehaviour = value;}}
+    
+    public Unit[] units{
+        get
+        {
+            return _units;
+        }
+        set
+        {
+            _units = value;
+            UpdateSelectionModes();
+        }
+    }
+
+    public SelectionBehaviour selectionBehaviour
+    {
+        get
+        {
+            return _selectionBehaviour;
+        }
+        set
+        {
+            _selectionBehaviour = value;
+            UpdateSelectionModes();
+        }
+    }
 
     // End - API
 
     private Vector3 startClick = -Vector3.one;
 
-    private DragSelection _dragSelection;
-    private ClickSelection _clickSelection;
+    private DragSelection dragSelection = new DragSelection();
+    private ClickSelection clickSelection = new ClickSelection();
 
     private void OnGUI()
     {
         if(startClick != -Vector3.one)
         {
             GUI.color = new Color (1,1,1,0.5f);
-            GUI.DrawTexture(_dragSelection.selectionArea, selectionHighlight);
+            GUI.DrawTexture(dragSelection.selectionArea, _selectionHighlight);
         }
     }
 
     private void Start()
     {
-        _dragSelection = new DragSelection(selectionBehaviour);
-        _clickSelection = new ClickSelection(selectionBehaviour);
+        UpdateSelectionModes(); 
+    }
+
+    private void UpdateSelectionModes()
+    {
+        clickSelection.units = _units;
+        dragSelection.units = _units;
+
+        clickSelection.selectionBehaviour = selectionBehaviour;
+        dragSelection.selectionBehaviour = selectionBehaviour;
     }
 
     private void Update()
     {
-        HandleSelection();
+        HandleMouseInput();
     }
 
-    private void HandleSelection()
+    private void HandleMouseInput()
     {
         if(Input.GetMouseButtonDown(0))
         {
-            startClick = Input.mousePosition;
+            MouseButtonWasPressed();
         }
         else if(Input.GetMouseButtonUp(0))
         {
-            if(_dragSelection.IsSelectionAreaZero())
-            {
-                // not dragging, ok to perform click selection
-                _clickSelection.MakeSelection(units, startClick);
-            }
-
-            startClick = -Vector3.one;
-            _dragSelection.selectionArea = new Rect(0,0,0,0);
+            MouseButtonWasReleased(); 
         }
-
         if(Input.GetMouseButton(0))
         {
-            _dragSelection.UpdateSelectionArea(startClick, Input.mousePosition); 
-            _dragSelection.MakeSelection(units);
+            MouseButtonIsBeingPressed();
+        }
+    }
+
+    private void MouseButtonWasPressed()
+    {
+        startClick = Input.mousePosition;
+    }
+
+    private void MouseButtonWasReleased()
+    {
+        if(dragSelection.IsSelectionAreaZero())
+        {
+            clickSelection.MouseWasClicked(startClick);
         }
 
+        startClick = -Vector3.one;
+        dragSelection.selectionArea = new Rect(0,0,0,0);
+    }
+
+    private void MouseButtonIsBeingPressed()
+    {
+        dragSelection.MouseIsBeingDragged(startClick, Input.mousePosition);
     }
 }

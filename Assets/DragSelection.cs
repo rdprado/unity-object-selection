@@ -1,14 +1,9 @@
 using UnityEngine;
 
-public class DragSelection
+public class DragSelection : SelectionMode
 {
-    private SelectionBehaviour _selectionBehaviour;
-    public DragSelection(SelectionBehaviour selectionBehaviour)
-    {
-        _selectionBehaviour = selectionBehaviour;
-    }
-
     public Rect selectionArea;
+
     public bool IsSelectionAreaZero()
     {
         return selectionArea.width == 0 && selectionArea.height == 0;
@@ -37,8 +32,10 @@ public class DragSelection
         }
     }
     
-    public void MakeSelection(Unit[] units)
+    public void MouseIsBeingDragged(Vector3 startClick, Vector3 currentMousePosition)
     {
+        UpdateSelectionArea(startClick, currentMousePosition);
+
         if(!IsSelectionAreaZero())
         {
             foreach(var unit in units)
@@ -49,7 +46,7 @@ public class DragSelection
                 }
                 else
                 {
-                    _selectionBehaviour.Unselect(unit);
+                    selectionBehaviour.Unselect(unit);
                 }
             }
         }
@@ -62,11 +59,11 @@ public class DragSelection
 
         if(selectionArea.Contains(unitPosition))
         {
-            _selectionBehaviour.Select(unit);
+            selectionBehaviour.Select(unit);
         }
         else
         {
-            _selectionBehaviour.Unselect(unit);
+            selectionBehaviour.Unselect(unit);
         }
 
     }
