@@ -2,69 +2,74 @@ using UnityEngine;
 
 public class DragSelection : SelectionMode
 {
-    public Rect selectionArea;
+    public Rect dragArea;
 
-    public bool IsSelectionAreaZero()
+    public bool IsDragAreaZero()
     {
-        return selectionArea.width == 0 && selectionArea.height == 0;
+        return dragArea.width == 0 && dragArea.height == 0;
     }
 
     private float ScreenToRectSpaceY(float y)
     {
         return Screen.height - y;
     }
-
-    public void UpdateSelectionArea(Vector3 startClick, Vector3 currentMousePosition)
+    
+    public void MouseIsBeingPressed(Vector3 startClick, Vector3 currentMousePosition)
     {
-        selectionArea = new Rect(startClick.x, ScreenToRectSpaceY(startClick.y),
-                currentMousePosition.x - startClick.x,
-                ScreenToRectSpaceY(currentMousePosition.y) - ScreenToRectSpaceY(startClick.y));
+        UpdateDragArea(startClick, currentMousePosition);
 
-        if(selectionArea.width < 0)
-        {
-            selectionArea.x += selectionArea.width;
-            selectionArea.width = -selectionArea.width;
+        if(!IsDragAreaZero())
+            MouseIsBeingDragged();     
+    }
+
+    public void UpdateDragArea(Vector3 startClick, Vector3 currentMousePosition)
+    {
+        dragArea = BuildDragArea(startClick, currentMousePosition); 
+        AdjustAreaWhenDirectionIsNegative();
+        
+    }
+    
+    Rect BuildDragArea(Vector3 startClick, Vector3 currentMousePosition)
+    {
+        return new Rect(startClick.x,
+                ScreenToRectSpaceY(startClick.y),
+                currentMousePosition.x - startClick.x,
+                ScreenToRectSpaceY(currentMousePosition.y) - ScreenToRectSpaceY(startClick.y)); 
+    }
+
+    void AdjustAreaWhenDirectionIsNegative()
+    {
+        if(dragArea.width < 0) {
+            dragArea.x += dragArea.width;
+            dragArea.width = -dragArea.width;
         }
-        if(selectionArea.height < 0)
-        {
-            selectionArea.y += selectionArea.height;
-            selectionArea.height = -selectionArea.height;
+
+        if(dragArea.height < 0) {
+            dragArea.y += dragArea.height;
+            dragArea.height = -dragArea.height;
+        }
+    }
+
+    private void MouseIsBeingDragged()
+    {
+        foreach(var unit in units) {
+            if(IsUnitVisibleForCamera(unit) && IsUnitUnderDragArea(unit))
+                selectionBehaviour.Select(unit);
+            else
+                selectionBehaviour.Unselect(unit);
         }
     }
     
-    public void MouseIsBeingDragged(Vector3 startClick, Vector3 currentMousePosition)
+    private bool IsUnitVisibleForCamera(Unit unit)
     {
-        UpdateSelectionArea(startClick, currentMousePosition);
-
-        if(!IsSelectionAreaZero())
-        {
-            foreach(var unit in units)
-            {
-                if(unit.GetComponent<Renderer>().isVisible)
-                {
-                    UnitIsVisibleForCamera(unit); 
-                }
-                else
-                {
-                    selectionBehaviour.Unselect(unit);
-                }
-            }
-        }
+        return unit.GetComponent<Renderer>().isVisible;
     }
 
-    private void UnitIsVisibleForCamera(Unit unit)
+    private bool IsUnitUnderDragArea(Unit unit)
     {
         Vector3 unitPosition = Camera.main.WorldToScreenPoint(unit.transform.position);
         unitPosition.y = ScreenToRectSpaceY(unitPosition.y);
 
-        if(selectionArea.Contains(unitPosition))
-        {
-            selectionBehaviour.Select(unit);
-        }
-        else
-        {
-            selectionBehaviour.Unselect(unit);
-        }
-
+        return dragArea.Contains(unitPosition);
     }
 }

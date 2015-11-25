@@ -51,7 +51,7 @@ public class Selection : MonoBehaviour {
         if(startClick != -Vector3.one)
         {
             GUI.color = new Color (1,1,1,0.5f);
-            GUI.DrawTexture(dragSelection.selectionArea, _selectionHighlight);
+            GUI.DrawTexture(dragSelection.dragArea, _selectionHighlight);
         }
     }
 
@@ -97,17 +97,17 @@ public class Selection : MonoBehaviour {
 
     private void MouseButtonWasReleased()
     {
-        if(dragSelection.IsSelectionAreaZero())
+        if(dragSelection.IsDragAreaZero())
         {
             clickSelection.MouseWasClicked(startClick);
         }
 
         startClick = -Vector3.one;
-        dragSelection.selectionArea = new Rect(0,0,0,0);
+        dragSelection.dragArea = new Rect(0,0,0,0);
     }
 
     private void MouseButtonIsBeingPressed()
     {
-        dragSelection.MouseIsBeingDragged(startClick, Input.mousePosition);
+        dragSelection.MouseIsBeingPressed(startClick, Input.mousePosition);
     }
 }

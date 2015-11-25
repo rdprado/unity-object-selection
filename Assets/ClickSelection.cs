@@ -5,35 +5,35 @@ public class ClickSelection : SelectionMode
     public void MouseWasClicked(Vector3 click)
     {
         RaycastHit hitInfo = new RaycastHit();
-        bool hit = Physics.Raycast(Camera.main.ScreenPointToRay(click), out hitInfo);
-        if (hit) 
+        var ray = Camera.main.ScreenPointToRay(click);
+
+        if (Physics.Raycast(ray, out hitInfo)) 
         {
-            Unit unitHit = hitInfo.transform.gameObject.GetComponent<Unit>();
-            if(unitHit != null)
-            {
-                Debug.Log("Hit " + hitInfo.transform.gameObject.name);
-                UnitWasHit(unitHit);
-            }
-            else
-            {
-                Debug.Log("No hit");
-                NoUnitsWereHit();
-            }
+            ThereWasARayHit(hitInfo);
         } 
         else 
         {
-            Debug.Log("No hit");
             NoUnitsWereHit();
         }
+    }
 
+    private void ThereWasARayHit(RaycastHit hitInfo)
+    {
+        Unit unitHit = hitInfo.transform.gameObject.GetComponent<Unit>();
+        if(unitHit != null)
+        {
+            UnitWasHit(unitHit);
+        }
+        else
+        {
+            NoUnitsWereHit();
+        }
     }
 
     private void UnitWasHit(Unit unitHit)
     {
-        if(unitHit != null)
-        {
-            selectionBehaviour.Select(unitHit); 
-        }
+        selectionBehaviour.Select(unitHit); 
+
         foreach(var unit in units)
         {
             if(unit != unitHit && unit.selected)
