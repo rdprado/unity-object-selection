@@ -77,17 +77,12 @@ public class Selection : MonoBehaviour {
     private void HandleMouseInput()
     {
         if(Input.GetMouseButtonDown(0))
-        {
             MouseButtonWasPressed();
-        }
         else if(Input.GetMouseButtonUp(0))
-        {
             MouseButtonWasReleased(); 
-        }
+        
         if(Input.GetMouseButton(0))
-        {
             MouseButtonIsBeingPressed();
-        }
     }
 
     private void MouseButtonWasPressed()
@@ -98,9 +93,7 @@ public class Selection : MonoBehaviour {
     private void MouseButtonWasReleased()
     {
         if(dragSelection.IsDragAreaZero())
-        {
             clickSelection.MouseWasClicked(startClick);
-        }
 
         startClick = -Vector3.one;
         dragSelection.dragArea = new Rect(0,0,0,0);

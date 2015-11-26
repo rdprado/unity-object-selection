@@ -7,7 +7,7 @@ Performs multi and single selection.
 
 Instructions
 
-* Put all scripts in the same folder.
+* Put all the selection scripts in the same folder.
 * Add the Selection.cs script to any GO.
 * Add the SelectionBehaviour.cs script to any GO.
 
