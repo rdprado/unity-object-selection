@@ -55,7 +55,7 @@ public class DragSelection : SelectionMode
         foreach(var unit in units) {
             if(IsUnitVisibleForCamera(unit) && IsUnitUnderDragArea(unit))
                 selectionBehaviour.Select(unit);
-            else
+            else if(!IsMultiSelectionModifierOn)
                 selectionBehaviour.Unselect(unit);
         }
     }
