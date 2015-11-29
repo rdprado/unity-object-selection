@@ -5,10 +5,15 @@ public class Selection : MonoBehaviour {
 
     [SerializeField]
     private Texture2D _selectionHighlight;
+
     [SerializeField]
     private Unit[] _units = new Unit[0];
+
     [SerializeField]
     private SelectionBehaviour _selectionBehaviour;
+
+    [SerializeField]
+    private KeyCode multiSelectionModifierKey = KeyCode.LeftControl;
 
     private Vector3 startClick = -Vector3.one;
 
@@ -46,7 +51,7 @@ public class Selection : MonoBehaviour {
 
     private void HandleKeyboardInput()
     {
-        var IsMultiSelectionModifierOn = Input.GetKey(KeyCode.LeftControl);
+        var IsMultiSelectionModifierOn = Input.GetKey(multiSelectionModifierKey);
         clickSelection.IsMultiSelectionModifierOn = IsMultiSelectionModifierOn;
         dragSelection.IsMultiSelectionModifierOn = IsMultiSelectionModifierOn;
     }
