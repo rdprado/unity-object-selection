@@ -3,43 +3,12 @@ using System.Collections.Generic;
 
 public class Selection : MonoBehaviour {
 
-    // API
-    
     [SerializeField]
     private Texture2D _selectionHighlight;
     [SerializeField]
     private Unit[] _units = new Unit[0];
     [SerializeField]
     private SelectionBehaviour _selectionBehaviour;
-    
-    public Texture2D selectionHighlight{get{return _selectionHighlight;}set{_selectionHighlight = value;}}
-    
-    public Unit[] units{
-        get
-        {
-            return _units;
-        }
-        set
-        {
-            _units = value;
-            UpdateSelectionModes();
-        }
-    }
-
-    public SelectionBehaviour selectionBehaviour
-    {
-        get
-        {
-            return _selectionBehaviour;
-        }
-        set
-        {
-            _selectionBehaviour = value;
-            UpdateSelectionModes();
-        }
-    }
-
-    // End - API
 
     private Vector3 startClick = -Vector3.one;
 
@@ -71,7 +40,15 @@ public class Selection : MonoBehaviour {
 
     private void Update()
     {
+        HandleKeyboardInput();
         HandleMouseInput();
+    }
+
+    private void HandleKeyboardInput()
+    {
+        var IsMultiSelectionModifierOn = Input.GetKey(KeyCode.LeftControl);
+        clickSelection.IsMultiSelectionModifierOn = IsMultiSelectionModifierOn;
+        dragSelection.IsMultiSelectionModifierOn = IsMultiSelectionModifierOn;
     }
 
     private void HandleMouseInput()
@@ -102,5 +79,42 @@ public class Selection : MonoBehaviour {
     private void MouseButtonIsBeingPressed()
     {
         dragSelection.MouseIsBeingPressed(startClick, Input.mousePosition);
+    }
+    
+    public Texture2D selectionHighlight
+    {
+        get
+        {
+            return _selectionHighlight;
+        }
+        set
+        {
+            _selectionHighlight = value;
+        }
+    }
+
+    public Unit[] units{
+        get
+        {
+            return _units;
+        }
+        set
+        {
+            _units = value;
+            UpdateSelectionModes();
+        }
+    }
+
+    public SelectionBehaviour selectionBehaviour
+    {
+        get
+        {
+            return _selectionBehaviour;
+        }
+        set
+        {
+            _selectionBehaviour = value;
+            UpdateSelectionModes();
+        }
     }
 }

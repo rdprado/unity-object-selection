@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class ClickSelection : SelectionMode
 {
+    private Unit unitHit;
+
     public void MouseWasClicked(Vector3 click)
     {
         RaycastHit hitInfo = new RaycastHit();
@@ -15,17 +17,25 @@ public class ClickSelection : SelectionMode
 
     private void ThereWasARayHit(RaycastHit hitInfo)
     {
-        Unit unitHit = hitInfo.transform.gameObject.GetComponent<Unit>();
+        unitHit = hitInfo.transform.gameObject.GetComponent<Unit>();
         if(unitHit != null)
-            UnitWasHit(unitHit);
+            UnitWasHit();
         else
             NoUnitsWereHit();
     }
 
-    private void UnitWasHit(Unit unitHit)
+    private void UnitWasHit()
     {
         selectionBehaviour.Select(unitHit); 
 
+        if(!IsMultiSelectionModifierOn)
+        {
+            UnselectAllButHit();
+        }
+    }
+
+    private void UnselectAllButHit()
+    {
         foreach(var unit in units)
             if(unit != unitHit && unit.selected)
                 selectionBehaviour.Unselect(unit);
