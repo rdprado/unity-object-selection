@@ -10,7 +10,7 @@ Press the key modifier to enable multi selection for both modes.
 
 * The only scripts to add to your GameObjects are **Selection.cs** and **SelectionBehaviour.cs**
 
-* Put all scripts from Assets/Scripts in the same folder.
+* Put all scripts from Assets/Scripts in the same folder
 * Link the selectable units with the Selection.cs
 * Link the SelectionBehaviour script with the Selection script
 
